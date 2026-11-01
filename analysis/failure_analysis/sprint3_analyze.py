@@ -477,7 +477,6 @@ def top20(e, st):
 
 
 def plots(e, st, at, fa):
-    os.makedirs(P, exist_ok=True)
     color = {'test': 'tab:blue', 'val': 'tab:orange'}
     fig, ax = plt.subplots(1, 2, figsize=(10, 4.5))
     for a, split in zip(ax, SPLITS):
@@ -623,6 +622,7 @@ def render_worst(e, at, n=3):
 
 
 def main():
+    os.makedirs(P, exist_ok=True)
     e, st, at, use = build()
     print('## Gates\n')
     rows = pd.concat([pd.read_json(S2 + f'raw_{s}/rows.jsonl', lines=True) for s in SPLITS]).drop_duplicates(

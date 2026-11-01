@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper and this software record."
+title: "UMA-AQ adapter: code for adapting UMA to spin-polarized AQCat25 with task-gated LoRA"
+type: software
+authors:
+  - family-names: Ultamar
+    given-names: Dejan Azul
+    affiliation: Independent Researcher
+    orcid: "https://orcid.org/0009-0006-0716-8983"
+doi: 10.5281/zenodo.23860497
+license: MIT
+repository-code: "https://github.com/dejanazul/uma-aq-adapter"
+keywords:
+  - machine learning interatomic potentials
+  - UMA
+  - AQCat25
+  - LoRA
+  - catastrophic forgetting
+  - spin-polarized DFT
+  - heterogeneous catalysis
+  - adsorption energy
+references:
+  - type: data
+    title: "UMA-AQ adapter: predictions, logs, data splits and analysis plans"
+    authors:
+      - family-names: Ultamar
+        given-names: Dejan Azul
+    doi: 10.5281/zenodo.23860707
+  - type: data
+    title: "UMA-AQ adapter weights"
+    authors:
+      - family-names: Ultamar
+        given-names: Dejan Azul
+    doi: 10.5281/zenodo.23860868
+preferred-citation:
+  type: article
+  title: "Adapting UMA to spin-polarized AQCat25 without catastrophic forgetting with task-gated LoRA"
+  authors:
+    - family-names: Ultamar
+      given-names: Dejan Azul
+      affiliation: Independent Researcher
+      orcid: "https://orcid.org/0009-0006-0716-8983"
+  doi: 10.26434/chemrxiv.15010987
+  journal: ChemRxiv
+  year: 2026

@@ -1,0 +1,14 @@
+fairchem-core==2.23.0
+fairchem-data-oc==1.0.2
+ase
+ase-db-backends
+huggingface_hub
+lmdb
+matplotlib
+numpy
+pandas
+pyarrow
+requests
+scipy
+tabulate
+torch-geometric

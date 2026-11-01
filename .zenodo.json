@@ -1,0 +1,56 @@
+{
+  "title": "UMA-AQ adapter: code for adapting UMA to spin-polarized AQCat25 with task-gated LoRA",
+  "upload_type": "software",
+  "description": "Code for the paper \"Adapting UMA to spin-polarized AQCat25 without catastrophic forgetting with task-gated LoRA\" (ChemRxiv, doi:10.26434/chemrxiv.15010987): adding an aqcat25 task to UMA-S-1p2, task-gated LoRA training on fairchem-core 2.23.0, the final evaluation, the zero-shot UMA and EV2-FiLM baselines, and the scripts that rebuild every table and figure. Predictions and logs: doi:10.5281/zenodo.23860707. Adapter weights (on request): doi:10.5281/zenodo.23860868. The code contains no UMA weights and no AQCat25 data; those are obtained under their own licenses (FAIR Chemistry License v1; CC BY-NC-SA 4.0).",
+  "creators": [
+    {
+      "name": "Ultamar, Dejan Azul",
+      "affiliation": "Independent Researcher",
+      "orcid": "0009-0006-0716-8983"
+    }
+  ],
+  "license": "mit",
+  "access_right": "open",
+  "keywords": [
+    "machine learning interatomic potentials",
+    "UMA",
+    "AQCat25",
+    "LoRA",
+    "catastrophic forgetting",
+    "spin-polarized DFT",
+    "heterogeneous catalysis",
+    "adsorption energy"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.26434/chemrxiv.15010987",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.1038/s41524-026-02099-6",
+      "relation": "references",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "arXiv:2506.23971",
+      "relation": "references",
+      "resource_type": "publication-preprint",
+      "scheme": "arxiv"
+    },
+    {
+      "identifier": "10.5281/zenodo.23860707",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.23860868",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    }
+  ]
+}

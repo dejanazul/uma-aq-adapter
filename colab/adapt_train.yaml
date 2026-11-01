@@ -1,0 +1,197 @@
+
+ckpt: ???
+data_dir: ???
+steps: ???
+batch_size: 8
+lr: 4e-4
+weight_decay: 1e-3
+max_neighbors: 300
+normalizer_rmsd: 1.342
+energy_coef: 20
+force_coef: 5
+ratio_low: ???
+ratio_high: ???
+ratio_slab: ???
+ratio_oc20: 1.0
+evaluate_every_n_steps: 1000
+checkpoint_every_n_steps: 1000
+num_workers: 4
+aq_elem_refs: ???
+oc20_elem_refs: ???
+
+job:
+  device_type: CUDA
+  scheduler:
+    mode: LOCAL
+    ranks_per_node: 1
+    num_nodes: 1
+  debug: True
+  run_dir: ???
+  run_name: adapt
+  logger: null
+
+aq_common: &aq_common
+  format: ase_db
+  a2g_args: {r_energy: True, r_forces: True}
+  key_mapping: {energy: aqcat25_energy, forces: aqcat25_forces}
+  transforms:
+    common_transform: {dataset_name: aqcat25}
+
+oc20_common: &oc20_common
+  format: ase_db
+  a2g_args: {r_energy: True, r_forces: True}
+  key_mapping: {energy: oc20_energy, forces: oc20_forces}
+  transforms:
+    common_transform: {dataset_name: oc20}
+
+train_dataset:
+  _target_: fairchem.core.datasets.mt_concat_dataset.create_concat_dataset
+  dataset_configs:
+    aqcat25:
+      <<: *aq_common
+      splits:
+        low: {src: "${data_dir}/aq_train_low"}
+        high: {src: "${data_dir}/aq_train_high"}
+        slab: {src: "${data_dir}/aq_train_slab"}
+    oc20:
+      <<: *oc20_common
+      splits:
+        train: {src: "${data_dir}/oc20_train"}
+  combined_dataset_config:
+    sampling:
+      type: explicit
+      ratios:
+        aqcat25.low: ${ratio_low}
+        aqcat25.high: ${ratio_high}
+        aqcat25.slab: ${ratio_slab}
+        oc20.train: ${ratio_oc20}
+
+val_dataset:
+  _target_: fairchem.core.datasets.mt_concat_dataset.create_concat_dataset
+  dataset_configs:
+    aqcat25:
+      <<: *aq_common
+      splits:
+        val: {src: "${data_dir}/aq_val"}
+    oc20:
+      <<: *oc20_common
+      splits:
+        val: {src: "${data_dir}/oc20_val"}
+  combined_dataset_config: {sampling: {type: temperature, temperature: 1.0}}
+
+train_dataloader:
+  _target_: fairchem.core.components.common.dataloader_builder.get_dataloader
+  dataset: ${train_dataset}
+  batch_sampler_fn:
+    _target_: fairchem.core.common.data_parallel.BalancedBatchSampler
+    _partial_: True
+    batch_size: ${batch_size}
+    shuffle: True
+    seed: 0
+  num_workers: ${num_workers}
+  collate_fn:
+    _target_: fairchem.core.units.mlip_unit.mlip_unit.mt_collater_adapter
+    tasks: ${tasks_list}
+
+eval_dataloader:
+  _target_: fairchem.core.components.common.dataloader_builder.get_dataloader
+  dataset: ${val_dataset}
+  batch_sampler_fn:
+    _target_: fairchem.core.common.data_parallel.BalancedBatchSampler
+    _partial_: True
+    batch_size: ${batch_size}
+    shuffle: False
+    seed: 0
+  num_workers: ${num_workers}
+  collate_fn:
+    _target_: fairchem.core.units.mlip_unit.mlip_unit.mt_collater_adapter
+    tasks: ${tasks_list}
+
+energy_task: &energy_task
+  _target_: fairchem.core.units.mlip_unit.mlip_unit.Task
+  level: system
+  property: energy
+  loss_fn:
+    _target_: fairchem.core.modules.loss.DDPMTLoss
+    loss_fn: {_target_: fairchem.core.modules.loss.PerAtomMAELoss}
+    coefficient: ${energy_coef}
+  out_spec: {dim: [1], dtype: float32}
+  normalizer: {_target_: fairchem.core.modules.normalization.normalizer.Normalizer, mean: 0.0, rmsd: "${normalizer_rmsd}"}
+  metrics: [mae, per_atom_mae]
+
+force_task: &force_task
+  _target_: fairchem.core.units.mlip_unit.mlip_unit.Task
+  level: atom
+  property: forces
+  train_on_free_atoms: True
+  eval_on_free_atoms: True
+  loss_fn:
+    _target_: fairchem.core.modules.loss.DDPMTLoss
+    loss_fn: {_target_: fairchem.core.modules.loss.L2NormLoss}
+    reduction: mean
+    coefficient: ${force_coef}
+  out_spec: {dim: [3], dtype: float32}
+  normalizer: {_target_: fairchem.core.modules.normalization.normalizer.Normalizer, mean: 0.0, rmsd: "${normalizer_rmsd}"}
+  metrics: [mae, cosine_similarity, magnitude_error]
+
+tasks_list:
+  - <<: *energy_task
+    name: aqcat25_energy
+    datasets: [aqcat25]
+    element_references:
+      _target_: fairchem.core.modules.normalization.element_references.ElementReferences
+      element_references: {_target_: torch.DoubleTensor, _args_: ["${aq_elem_refs}"]}
+  - <<: *force_task
+    name: aqcat25_forces
+    datasets: [aqcat25]
+  - <<: *energy_task
+    name: oc20_energy
+    datasets: [oc20]
+    element_references:
+      _target_: fairchem.core.modules.normalization.element_references.ElementReferences
+      element_references: {_target_: torch.DoubleTensor, _args_: ["${oc20_elem_refs}"]}
+  - <<: *force_task
+    name: oc20_forces
+    datasets: [oc20]
+
+runner:
+  _target_: fairchem.core.components.train.train_runner.TrainEvalRunner
+  train_dataloader: ${train_dataloader}
+  eval_dataloader: ${eval_dataloader}
+  train_eval_unit:
+    _target_: fairchem.core.units.mlip_unit.mlip_unit.MLIPTrainEvalUnit
+    job_config: ${job}
+    tasks: ${tasks_list}
+    model:
+      _target_: fairchem.core.units.mlip_unit.mlip_unit.initialize_finetuning_model
+      checkpoint_location: ${ckpt}
+      overrides:
+        backbone:
+          otf_graph: True
+          max_neighbors: ${max_neighbors}
+          regress_stress: False
+          always_use_pbc: False
+        pass_through_head_outputs: True
+      heads: null
+    optimizer_fn:
+      _target_: torch.optim.AdamW
+      _partial_: true
+      lr: ${lr}
+      weight_decay: ${weight_decay}
+    cosine_lr_scheduler_fn:
+      _target_: fairchem.core.units.mlip_unit.mlip_unit._get_consine_lr_scheduler
+      _partial_: true
+      warmup_factor: 0.2
+      warmup_epochs: 0.01
+      lr_min_factor: 0.01
+      epochs: null
+      steps: ${steps}
+    print_every: 10
+    clip_grad_norm: 100
+  max_epochs: null
+  max_steps: ${steps}
+  evaluate_every_n_steps: ${evaluate_every_n_steps}
+  callbacks:
+    - _target_: fairchem.core.components.callbacks.TrainCheckpointCallback
+      checkpoint_every_n_steps: ${checkpoint_every_n_steps}
+      max_saved_checkpoints: 5

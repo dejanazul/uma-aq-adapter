@@ -3,7 +3,7 @@
 Code for
 
 > D. A. Ultamar. *Adapting UMA to spin-polarized AQCat25 without catastrophic forgetting with task-gated LoRA.*
-> ChemRxiv (2026). [doi:10.26434/chemrxiv.15010987](https://doi.org/10.26434/chemrxiv.15010987)
+> ChemRxiv (2026). [doi:10.26434/chemrxiv.15010987/v1](https://doi.org/10.26434/chemrxiv.15010987/v1)
 
 UMA-AQ adapter adds a new task, `aqcat25`, to the universal interatomic potential UMA-S-1p2 and trains only parts
 that belong to that task: its dataset embedding, its expert slot in the energy head, and rank-8 LoRA adapters on the
@@ -166,7 +166,7 @@ its affiliates).
 Please cite the paper and this record (`CITATION.cff`):
 
 - D. A. Ultamar. Adapting UMA to spin-polarized AQCat25 without catastrophic forgetting with task-gated LoRA.
-  ChemRxiv (2026). doi:10.26434/chemrxiv.15010987
+  ChemRxiv (2026). doi:10.26434/chemrxiv.15010987/v1
 - D. A. Ultamar. UMA-AQ adapter: code. Zenodo (2026). doi:10.5281/zenodo.23860497
 
 and the resources it builds on:

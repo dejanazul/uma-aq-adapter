@@ -1,7 +1,7 @@
 {
   "title": "UMA-AQ adapter: code for adapting UMA to spin-polarized AQCat25 with task-gated LoRA",
   "upload_type": "software",
-  "description": "Code for the paper \"Adapting UMA to spin-polarized AQCat25 without catastrophic forgetting with task-gated LoRA\" (ChemRxiv, doi:10.26434/chemrxiv.15010987): adding an aqcat25 task to UMA-S-1p2, task-gated LoRA training on fairchem-core 2.23.0, the final evaluation, the zero-shot UMA and EV2-FiLM baselines, and the scripts that rebuild every table and figure. Predictions and logs: doi:10.5281/zenodo.23860707. Adapter weights (on request): doi:10.5281/zenodo.23860868. The code contains no UMA weights and no AQCat25 data; those are obtained under their own licenses (FAIR Chemistry License v1; CC BY-NC-SA 4.0).",
+  "description": "Code for the paper \"Adapting UMA to spin-polarized AQCat25 without catastrophic forgetting with task-gated LoRA\" (ChemRxiv, doi:10.26434/chemrxiv.15010987/v1): adding an aqcat25 task to UMA-S-1p2, task-gated LoRA training on fairchem-core 2.23.0, the final evaluation, the zero-shot UMA and EV2-FiLM baselines, and the scripts that rebuild every table and figure. Predictions and logs: doi:10.5281/zenodo.23860707. Adapter weights (on request): doi:10.5281/zenodo.23860868. The code contains no UMA weights and no AQCat25 data; those are obtained under their own licenses (FAIR Chemistry License v1; CC BY-NC-SA 4.0).",
   "creators": [
     {
       "name": "Ultamar, Dejan Azul",
@@ -23,7 +23,7 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "10.26434/chemrxiv.15010987",
+      "identifier": "10.26434/chemrxiv.15010987/v1",
       "relation": "isSupplementTo",
       "resource_type": "publication-preprint",
       "scheme": "doi"
